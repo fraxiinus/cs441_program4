@@ -17,6 +17,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
 
+    private lateinit var cardTextures: CardExtensions
     private lateinit var img: Texture
 
     private var screenWidth: Float = 0f
@@ -25,7 +26,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     override fun create() {
         // Get screen size
         screenWidth = Gdx.graphics.width.toFloat()
-        screenHeight = Gdx.graphics.width.toFloat()
+        screenHeight = Gdx.graphics.height.toFloat()
 
         // Create camera and set to size of screen
         // this allows play area to be a different "resolution" than the native screen
@@ -33,17 +34,22 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         camera.setToOrtho(false, screenWidth, screenHeight)
 
         spriteBatch = SpriteBatch()
+
+        // Set viewport size, this is the size of the game area
         stage = Stage(FitViewport(screenWidth, screenHeight, camera), spriteBatch)
         shapeRenderer = ShapeRenderer()
 
+        // Use this class as the input processor
         Gdx.input.inputProcessor = this
 
+        // Load game stuff
+        cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
         img = Texture("badlogic.jpg")
     }
 
     override fun render() {
         // Clear the screen
-        Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // Update camera matrices
@@ -53,45 +59,55 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         spriteBatch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined
 
+        /////// Test
+        var card = Card(Suit.HEARTS, 0, 0f, 0f)
+        ///////
+
         spriteBatch.begin()
-        spriteBatch.draw(img, 0f, 0f)
+
+        for(i in 0..12) {
+            card.value = i
+            spriteBatch.draw(cardTextures.getFront(card), 150f * i, 100f, card.width * 2, card.height * 2)
+        }
+
         spriteBatch.end()
-    }
-
-    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun keyTyped(character: Char): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun scrolled(amount: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun keyUp(keycode: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun keyDown(keycode: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun dispose() {
         spriteBatch.dispose()
         img.dispose()
+    }
+
+    /***** INPUT PROCESSOR FUNCTIONS *****/
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return true
+    }
+
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        return true
+    }
+
+    override fun keyTyped(character: Char): Boolean {
+        return true
+    }
+
+    override fun scrolled(amount: Int): Boolean {
+        return true
+    }
+
+    override fun keyUp(keycode: Int): Boolean {
+        return true
+    }
+
+    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        return true
+    }
+
+    override fun keyDown(keycode: Int): Boolean {
+        return true
+    }
+
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return true
     }
 }
