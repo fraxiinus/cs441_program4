@@ -1,5 +1,6 @@
 package com.etirps.zhu.windows95
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -22,6 +23,8 @@ class Card (var suit: Suit,         var value: Int,
 
     private var speedX: Float = 0f
     private var speedY: Float = 0f
+
+    private var energyLoss: Float = 1.5f
 
     var bounds: Rectangle
     var polygon: Polygon
@@ -54,6 +57,10 @@ class Card (var suit: Suit,         var value: Int,
         polygon.setPosition(x, y)
     }
 
+    private fun changeSuit() {
+
+    }
+
     override fun act(delta: Float) {
         if(touched) {
             speedX = x - lastX
@@ -71,6 +78,26 @@ class Card (var suit: Suit,         var value: Int,
 
             x += speedX
             y += speedY
+
+            bounds.x = x
+            bounds.y = y
+            polygon.setPosition(x, y)
+        }
+
+        if(x + width > Gdx.graphics.width) {
+            x = Gdx.graphics.width - width
+            speedX = -(speedX / energyLoss)
+        } else if(x < 0) {
+            x = 0f
+            speedX = -(speedX / energyLoss)
+        }
+
+        if(y + height > Gdx.graphics.height) {
+            y = Gdx.graphics.height - height
+            speedY = -(speedY / energyLoss)
+        } else if (y < 0) {
+            y = 0f
+            speedY = -(speedY / energyLoss)
         }
     }
 
