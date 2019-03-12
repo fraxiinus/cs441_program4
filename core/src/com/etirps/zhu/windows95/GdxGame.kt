@@ -114,7 +114,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Spawn 4 kings
             val value = 11
 
-            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures, shapeRenderer, bgGroup, debugFont)
+            val card = Card(suit, value, 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, bgGroup, debugFont)
             cards.add(card)
             fgGroup.addActor(card)
         }
@@ -141,8 +141,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             focusedCard?.touched = false
             input.draggingCard = false
             focusedCard = null
-            input.destX = -1f
-            input.destY = -1f
         }
 
         if(input.draggingCard && focusedCard != null) {
@@ -181,6 +179,11 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         val actualxy = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
 
         input.tappedUp(actualxy.x, actualxy.y)
+
+        input.destX = -1f
+        input.destY = -1f
+        focusedCard?.touched = false
+
         focusedCard = null
 
         return true
