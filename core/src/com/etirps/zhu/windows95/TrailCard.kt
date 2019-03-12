@@ -14,7 +14,7 @@ class TrailCard(posX: Float,    posY: Float,
                 var shapeRenderer: ShapeRenderer,
                 var debugFont: BitmapFont?): Actor() {
 
-    private var life: Float = 5f
+    private var life: Float = 3f
     var timeRemaining: Float = life
     var lastTime: Long = TimeUtils.millis()
 
