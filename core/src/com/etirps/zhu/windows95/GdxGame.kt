@@ -64,7 +64,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     override fun render() {
         // Clear the screen
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // Update camera matrices
@@ -81,11 +81,12 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         shapeRenderer.circle(input.destX, input.destY, 5f)
 
+        drawHUD()
+
         shapeRenderer.end()
 
         stage.act()
         stage.draw()
-
     }
 
     override fun dispose() {
@@ -94,41 +95,60 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
+
     private fun setupGame() {
-        for(s in 0..0) {
+        for(s in 0..3) {
             // Loop for every suit
             val suit = Suit.values()[s]
 
-            for(value in 0..5) {
-                // Loop for every value
-                val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures.getFront(suit, value), debugFont)
-                cards.add(card)
-                stage.addActor(card)
-            }
+            val value = 11
+
+            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures.getFront(suit, value), debugFont)
+            cards.add(card)
+            stage.addActor(card)
+
         }
     }
 
     private fun actOnInput() {
-
-        if(input.fingerUp) {
+        // If am not dragging a card
+        if(!input.draggingCard) {
+            // loop through every card
+            for (card in cards) {
+                // If the card is at the input point
+                if(card.bounds.contains(input.destX, input.destY)) {
+                    // Set focused card to the card
+                    focusedCard = card
+                    // set card as touched
+                    card.touched = true
+                    // set dragging flag as true
+                    input.draggingCard = true
+                    // stop looping
+                    break
+                }
+            }
+        }else if(input.fingerUp){
             focusedCard?.touched = false
+            input.draggingCard = false
             focusedCard = null
+            input.destX = -1f
+            input.destY = -1f
         }
 
         if(input.draggingCard && focusedCard != null) {
             focusedCard?.move(input.destX, input.destY)
         }
 
-        if(!input.draggingCard && focusedCard == null) {
-            for (card in cards) {
-                if(card.bounds.contains(input.destX, input.destY)) {
-                    focusedCard = card
-                    card.touched = true
-                    input.draggingCard = true
-                    break
-                }
-            }
-        }
+
+
+    }
+
+    private fun drawHUD() {
+        spriteBatch.begin()
+
+        debugFont?.draw(spriteBatch, "fingerDown:${input.fingerDown}\nfingerUp:${input.fingerUp}\ndoubleTap:${input.doubleTap}\ndraggingCard:${input.draggingCard}\npos:${input.destX}x${input.destY}", input.destX + 100, input.destY)
+
+        spriteBatch.end()
 
     }
 
