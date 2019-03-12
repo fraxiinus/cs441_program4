@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
@@ -19,6 +20,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
     private lateinit var input: Input
+    private var debugFont: BitmapFont? = null
 
     private var screenWidth: Float = 0f
     private var screenHeight: Float = 0f
@@ -33,16 +35,18 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         screenWidth = Gdx.graphics.width.toFloat()
         screenHeight = Gdx.graphics.height.toFloat()
 
+        // Create engine objects
+        spriteBatch = SpriteBatch()
+        shapeRenderer = ShapeRenderer()
+        debugFont = BitmapFont()
+
         // Create camera and set to size of screen
         // this allows play area to be a different "resolution" than the native screen
         camera = OrthographicCamera()
         camera.setToOrtho(false, screenWidth, screenHeight)
 
-        spriteBatch = SpriteBatch()
-
         // Set viewport size, this is the size of the game area
         stage = Stage(FitViewport(screenWidth, screenHeight, camera), spriteBatch)
-        shapeRenderer = ShapeRenderer()
 
         // Use this class as the input processor
         Gdx.input.inputProcessor = this
@@ -60,7 +64,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     override fun render() {
         // Clear the screen
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // Update camera matrices
@@ -70,6 +74,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         spriteBatch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined
 
+        actOnInput()
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.color = Color.WHITE
 
@@ -77,15 +83,9 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         shapeRenderer.end()
 
-        spriteBatch.begin()
+        stage.act()
+        stage.draw()
 
-        actOnInput()
-
-        for(card in cards) {
-            spriteBatch.draw(card.textureRegion, card.x, card.y, card.width, card.height)
-        }
-
-        spriteBatch.end()
     }
 
     override fun dispose() {
@@ -99,9 +99,11 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Loop for every suit
             val suit = Suit.values()[s]
 
-            for(value in 0..12) {
+            for(value in 0..5) {
                 // Loop for every value
-                cards.add(Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures.getFront(suit, value)))
+                val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures.getFront(suit, value), debugFont)
+                cards.add(card)
+                stage.addActor(card)
             }
         }
     }
@@ -109,6 +111,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private fun actOnInput() {
 
         if(input.fingerUp) {
+            focusedCard?.touched = false
             focusedCard = null
         }
 
@@ -120,12 +123,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             for (card in cards) {
                 if(card.bounds.contains(input.destX, input.destY)) {
                     focusedCard = card
+                    card.touched = true
                     input.draggingCard = true
                     break
                 }
             }
         }
-        
+
     }
 
     /***** INPUT PROCESSOR FUNCTIONS *****/

@@ -1,6 +1,8 @@
 package com.etirps.zhu.windows95
 
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Rectangle
@@ -11,9 +13,10 @@ enum class Suit { CLOVERS, DIAMONDS, HEARTS, SPADES }
 class Card (var suit: Suit,         var value: Int,
             posX: Float,            posY: Float,
             width: Float = 69f,     height: Float = 94f,
-            var textureRegion: TextureRegion): Actor() {
+            var textureRegion: TextureRegion,
+            var debugFont: BitmapFont? = null): Actor() {
 
-    private var touched: Boolean = false
+    var touched: Boolean = false
     private var lastX: Float
     private var lastY: Float
 
@@ -62,6 +65,17 @@ class Card (var suit: Suit,         var value: Int,
             bounds.x = x
             bounds.y = y
             polygon.setPosition(x, y)
+        } else {
+            lastX = x
+            lastY = y
+
+            x += speedX
+            y += speedY
         }
+    }
+
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.draw(textureRegion, x, y, width / 2, height / 2, width, height, 1f, 1f, 0f)
+        debugFont?.draw(batch, "pos:$x x $y\nspeed:$speedX x $speedY\ntouched:$touched", x, y)
     }
 }
