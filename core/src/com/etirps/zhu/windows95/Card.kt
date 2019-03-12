@@ -1,12 +1,16 @@
 package com.etirps.zhu.windows95
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 enum class Suit { CLOVERS, DIAMONDS, HEARTS, SPADES }
 
@@ -14,6 +18,7 @@ class Card (var suit: Suit,         var value: Int,
             posX: Float,            posY: Float,
             width: Float = 69f,     height: Float = 94f,
             var cardExtensions: CardExtensions,
+            var shapeRenderer: ShapeRenderer,
             var debugFont: BitmapFont? = null): Actor() {
 
     var touched: Boolean = false
@@ -25,6 +30,8 @@ class Card (var suit: Suit,         var value: Int,
 
     private var energyLoss: Float = 1.5f
     private var textureRegion: TextureRegion
+
+    private var distanceTraveled: Float = 0f
 
     var bounds: Rectangle
     var polygon: Polygon
@@ -74,6 +81,8 @@ class Card (var suit: Suit,         var value: Int,
             speedX = x - lastX
             speedY = y - lastY
 
+            distanceTraveled += sqrt((x - lastX).pow(2) + (y-lastY).pow(2))
+
             lastX = x
             lastY = y
 
@@ -81,6 +90,8 @@ class Card (var suit: Suit,         var value: Int,
             bounds.y = y
             polygon.setPosition(x, y)
         } else {
+            distanceTraveled += sqrt((x - lastX).pow(2) + (y-lastY).pow(2))
+
             lastX = x
             lastY = y
 
@@ -115,10 +126,26 @@ class Card (var suit: Suit,         var value: Int,
 
             changeSuit()
         }
+
+        if(distanceTraveled > 25) {
+
+            val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
+            stage.addActor(trail)
+
+            distanceTraveled = 0f
+        }
+
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.end()
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+        shapeRenderer.color = Color.BLACK
+        shapeRenderer.rect(x - 2f, y - 2f, width + 4, height + 4)
+        shapeRenderer.end()
+        batch.begin()
+
         batch.draw(textureRegion, x, y, width / 2, height / 2, width, height, 1f, 1f, 0f)
-        debugFont?.draw(batch, "pos:$x x $y\nspeed:$speedX x $speedY\ntouched:$touched", x, y)
+        debugFont?.draw(batch, "pos:$x x $y\nspeed:$speedX x $speedY\ntouched:$touched\ndistance:$distanceTraveled", x, y)
     }
 }
