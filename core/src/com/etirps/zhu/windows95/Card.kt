@@ -1,7 +1,6 @@
 package com.etirps.zhu.windows95
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -14,7 +13,7 @@ enum class Suit { CLOVERS, DIAMONDS, HEARTS, SPADES }
 class Card (var suit: Suit,         var value: Int,
             posX: Float,            posY: Float,
             width: Float = 69f,     height: Float = 94f,
-            var textureRegion: TextureRegion,
+            var cardExtensions: CardExtensions,
             var debugFont: BitmapFont? = null): Actor() {
 
     var touched: Boolean = false
@@ -25,6 +24,7 @@ class Card (var suit: Suit,         var value: Int,
     private var speedY: Float = 0f
 
     private var energyLoss: Float = 1.5f
+    private var textureRegion: TextureRegion
 
     var bounds: Rectangle
     var polygon: Polygon
@@ -38,6 +38,8 @@ class Card (var suit: Suit,         var value: Int,
 
         setWidth(width)
         setHeight(height)
+
+        textureRegion = cardExtensions.getFront(suit, value)
 
         bounds = Rectangle(x, y, width, height)
         polygon = Polygon(floatArrayOf( 0f,             0f,
@@ -58,7 +60,13 @@ class Card (var suit: Suit,         var value: Int,
     }
 
     private fun changeSuit() {
+        when {
+            value == 0 -> value = 12
+            value > 0 -> value -= 1
+            value == 12 -> value = 11
+        }
 
+        textureRegion = cardExtensions.getFront(suit, value)
     }
 
     override fun act(delta: Float) {
@@ -87,17 +95,25 @@ class Card (var suit: Suit,         var value: Int,
         if(x + width > Gdx.graphics.width) {
             x = Gdx.graphics.width - width
             speedX = -(speedX / energyLoss)
+
+            changeSuit()
         } else if(x < 0) {
             x = 0f
             speedX = -(speedX / energyLoss)
+
+            changeSuit()
         }
 
         if(y + height > Gdx.graphics.height) {
             y = Gdx.graphics.height - height
             speedY = -(speedY / energyLoss)
+
+            changeSuit()
         } else if (y < 0) {
             y = 0f
             speedY = -(speedY / energyLoss)
+
+            changeSuit()
         }
     }
 
