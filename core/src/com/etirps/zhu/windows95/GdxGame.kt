@@ -95,7 +95,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
-
     private fun setupGame() {
         for(s in 0..3) {
             // Loop for every suit
@@ -103,7 +102,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
             val value = 11
 
-            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures.getFront(suit, value), debugFont)
+            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures, debugFont)
             cards.add(card)
             stage.addActor(card)
 
@@ -138,8 +137,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         if(input.draggingCard && focusedCard != null) {
             focusedCard?.move(input.destX, input.destY)
         }
-
-
 
     }
 
