@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -19,6 +20,7 @@ class Card (var suit: Suit,         var value: Int,
             width: Float = 69f,     height: Float = 94f,
             var cardExtensions: CardExtensions,
             var shapeRenderer: ShapeRenderer,
+            var backgroundGroup: Group,
             var debugFont: BitmapFont? = null): Actor() {
 
     var touched: Boolean = false
@@ -130,7 +132,7 @@ class Card (var suit: Suit,         var value: Int,
         if(distanceTraveled > 25) {
 
             val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
-            stage.addActor(trail)
+            backgroundGroup.addActor(trail)
 
             distanceTraveled = 0f
         }

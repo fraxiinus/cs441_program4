@@ -11,11 +11,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 
 class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var stage: Stage
+    private lateinit var bgGroup: Group
+    private lateinit var fgGroup: Group
     private lateinit var camera: OrthographicCamera
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
@@ -47,6 +50,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         // Set viewport size, this is the size of the game area
         stage = Stage(FitViewport(screenWidth, screenHeight, camera), spriteBatch)
+        bgGroup = Group()
+        fgGroup = Group()
+
+        stage.addActor(bgGroup)
+        stage.addActor(fgGroup)
+
+        // Set line width of the border
         Gdx.gl.glLineWidth(2f)
 
         // Use this class as the input processor
@@ -101,12 +111,12 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Loop for every suit
             val suit = Suit.values()[s]
 
+            // Spawn 4 kings
             val value = 11
 
-            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures, shapeRenderer, debugFont)
+            val card = Card(suit, value, 150f * value, 100f, 69f * 2, 94f * 2, cardTextures, shapeRenderer, bgGroup, debugFont)
             cards.add(card)
-            stage.addActor(card)
-
+            fgGroup.addActor(card)
         }
     }
 
