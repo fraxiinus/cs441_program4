@@ -114,7 +114,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Spawn 4 kings
             val value = 11
 
-            val card = Card(suit, value, 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, bgGroup, debugFont)
+            val card = Card(suit, value, 5 + 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, bgGroup, debugFont)
             cards.add(card)
             fgGroup.addActor(card)
         }
@@ -153,6 +153,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         spriteBatch.begin()
 
         debugFont?.draw(spriteBatch, "fingerDown:${input.fingerDown}\nfingerUp:${input.fingerUp}\ndoubleTap:${input.doubleTap}\ndraggingCard:${input.draggingCard}\npos:${input.destX}x${input.destY}", input.destX + 100, input.destY)
+
+        debugFont?.draw(spriteBatch, "X: ${Gdx.input.accelerometerX}\nY: ${Gdx.input.accelerometerY}\nZ: ${Gdx.input.accelerometerY}", 5f, screenHeight - 40)
 
         spriteBatch.end()
 

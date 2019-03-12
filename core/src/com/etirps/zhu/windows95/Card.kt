@@ -30,7 +30,7 @@ class Card (var suit: Suit,         var value: Int,
     private var speedX: Float = 0f
     private var speedY: Float = 0f
 
-    private var energyLoss: Float = 1.5f
+    private var energyLoss: Float = 1.25f
     private var textureRegion: TextureRegion
 
     private var distanceTraveled: Float = 0f
@@ -79,7 +79,9 @@ class Card (var suit: Suit,         var value: Int,
     }
 
     override fun act(delta: Float) {
+        // If is currently being dragged
         if(touched) {
+            // Set the speed
             speedX = x - lastX
             speedY = y - lastY
 
@@ -97,8 +99,13 @@ class Card (var suit: Suit,         var value: Int,
             lastX = x
             lastY = y
 
+            // Use the speed to move
             x += speedX
             y += speedY
+
+            speedY -= Gdx.input.accelerometerX
+
+            speedX += Gdx.input.accelerometerY
 
             bounds.x = x
             bounds.y = y
@@ -107,11 +114,13 @@ class Card (var suit: Suit,         var value: Int,
 
         if(x + width > Gdx.graphics.width) {
             x = Gdx.graphics.width - width
+
             speedX = -(speedX / energyLoss)
 
             changeSuit()
         } else if(x < 0) {
             x = 0f
+
             speedX = -(speedX / energyLoss)
 
             changeSuit()
@@ -124,6 +133,7 @@ class Card (var suit: Suit,         var value: Int,
             changeSuit()
         } else if (y < 0) {
             y = 0f
+
             speedY = -(speedY / energyLoss)
 
             changeSuit()
