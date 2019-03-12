@@ -103,9 +103,9 @@ class Card (var suit: Suit,         var value: Int,
             x += speedX
             y += speedY
 
-            speedY -= Gdx.input.accelerometerX
+            speedY -= (Gdx.input.accelerometerX * 0.5f)
 
-            speedX += Gdx.input.accelerometerY
+            speedX += (Gdx.input.accelerometerY * 0.5f)
 
             bounds.x = x
             bounds.y = y
