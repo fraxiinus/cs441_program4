@@ -49,7 +49,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         // Create engine objects
         spriteBatch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
-        debugFont = BitmapFont()
+        //debugFont = BitmapFont()
 
         // Create camera and set to size of screen
         // this allows play area to be a different "resolution" than the native screen
