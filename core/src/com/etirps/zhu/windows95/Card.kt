@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -142,6 +143,22 @@ class Card (var suit: Suit,         var value: Int,
             speedY = -(speedY / energyLoss)
 
             changeSuit()
+        }
+
+        // Limit the speed of a card
+        if(abs(speedX) > 50) {
+            speedX = if(speedX < 0) {
+                -50f
+            } else {
+                50f
+            }
+        }
+        if(abs(speedY) > 50) {
+            speedY = if(speedY < 0) {
+                -50f
+            } else {
+                50f
+            }
         }
 
         // Drop a card for the trail
