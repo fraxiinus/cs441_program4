@@ -4,12 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.audio.Sound
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -24,6 +23,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var camera: OrthographicCamera
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
+    private lateinit var frameBuffer: FrameBuffer
     private lateinit var fpsCounter: FPSCounter
     private lateinit var input: Input
 
@@ -61,6 +61,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         camera = OrthographicCamera()
         camera.setToOrtho(false, screenWidth, screenHeight)
 
+        frameBuffer = FrameBuffer(Pixmap.Format.RGB888, camera.viewportWidth.toInt(), camera.viewportHeight.toInt(), false)
+
         fpsCounter = FPSCounter(debugFont)
         fpsCounter.resize(screenWidth, screenHeight)
 
@@ -94,6 +96,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     override fun render() {
+        frameBuffer.begin()
         fpsLimitBegin = TimeUtils.nanoTime()
 
         // Clear the screen
@@ -121,6 +124,10 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             spriteBatch.begin()
             spriteBatch.draw(bootTexture, screenWidth / 2 - (1305 / 2), 0f, 1305f, 1080f)
             spriteBatch.end()
+
+            frameBuffer.end()
+
+            drawFrame()
             return
         } else if(!postBoot) {
 
@@ -150,11 +157,18 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         while(fpsLimitEnd + sleepTime > System.nanoTime()){
             Thread.yield()
         }
+
+        frameBuffer.end()
+
+        drawFrame()
     }
 
     override fun dispose() {
         spriteBatch.dispose()
         cardTextures.dispose()
+        frameBuffer.dispose()
+        bootSound.dispose()
+        bootTexture.dispose()
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
@@ -170,6 +184,14 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             cards.add(card)
             fgGroup.addActor(card)
         }
+    }
+
+    private fun drawFrame() {
+        spriteBatch.begin()
+        val texture = TextureRegion(frameBuffer.colorBufferTexture)
+        texture.flip(false, true)
+        spriteBatch.draw(texture, 0f, 0f)
+        spriteBatch.end()
     }
 
     private fun actOnInput() {
