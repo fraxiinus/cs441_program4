@@ -33,7 +33,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private var screenHeight: Float = 0f
 
     private lateinit var cardTextures: CardExtensions
-    private lateinit var bootTexture: Texture
     private lateinit var lastTexture: TextureRegion
     private lateinit var bootSound: Sound
 
@@ -42,7 +41,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     private var lastTime: Long = 0
     private var soundPlayed: Boolean = false
-    private var postBoot: Boolean = false
+    //private var postBoot: Boolean = false
 
     override fun create() {
         // Get screen size
@@ -59,6 +58,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         camera = OrthographicCamera()
         camera.setToOrtho(false, screenWidth, screenHeight)
 
+        // Create framebuffer, used for trail effect
         frameBuffer = FrameBuffer(Pixmap.Format.RGB888, camera.viewportWidth.toInt(), camera.viewportHeight.toInt(), false)
 
         fpsCounter = FPSCounter(debugFont)
@@ -83,7 +83,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         // Load Textures
         cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
-        bootTexture = Texture("loading_win98.gif")
         bootSound = Gdx.audio.newSound(Gdx.files.internal("win98.ogg"))
 
         // Load game objects
@@ -94,12 +93,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         frameBuffer.begin()
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         frameBuffer.end()
         lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
         lastTexture.flip(false, true)
+
     }
 
     override fun render() {
@@ -123,32 +123,34 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         spriteBatch.draw(lastTexture, 0f, 0f)
         spriteBatch.end()
 
-        if((TimeUtils.millis() - lastTime) / 1000f < 1 && (TimeUtils.millis() - lastTime) / 1000f > 0.5 && !soundPlayed) {
+
+        if((TimeUtils.millis() - lastTime) / 1000f < 1.5 && (TimeUtils.millis() - lastTime) / 1000f > 1 && !soundPlayed) {
             bootSound.play(1f)
             soundPlayed = true
+            frameBuffer.end()
+
+            drawFrame()
             return
         }
-        else if((TimeUtils.millis() - lastTime) / 1000f < 8) {
-            Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        else if((TimeUtils.millis() - lastTime) / 1000f < 2) {
+            Gdx.gl.glClearColor(9f / 255f, 141 / 255f, 126 / 255f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-            spriteBatch.begin()
-            spriteBatch.draw(bootTexture, screenWidth / 2 - (1305 / 2), 0f, 1305f, 1080f)
-            spriteBatch.end()
+            //spriteBatch.begin()
+            //spriteBatch.draw(bootTexture, screenWidth / 2 - (1305 / 2), 0f, 1305f, 1080f)
+            //spriteBatch.end()
 
             frameBuffer.end()
 
             drawFrame()
             return
-        } else if(!postBoot) {
-
-            bootTexture.dispose()
+        } else if(soundPlayed) {
             bootSound.dispose()
 
             Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-            postBoot = true
+            soundPlayed = false
         }
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
@@ -175,7 +177,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         cardTextures.dispose()
         frameBuffer.dispose()
         bootSound.dispose()
-        bootTexture.dispose()
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
