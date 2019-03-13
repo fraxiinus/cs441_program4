@@ -40,9 +40,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var cards: MutableList<Card>
     private var focusedCard: Card? = null
 
-    //private var fpsLimitBegin: Long = 0
-    //private var fpsLimitEnd: Long = 0
-
     private var lastTime: Long = 0
     private var soundPlayed: Boolean = false
     private var postBoot: Boolean = false
@@ -108,8 +105,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     override fun render() {
         frameBuffer.begin()
 
-        //fpsLimitBegin = TimeUtils.nanoTime()
-
         // Clear the screen
         Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -170,13 +165,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         stage.act()
         stage.draw()
 
-        /*fpsLimitEnd = System.nanoTime()
-        val timeDiff = fpsLimitEnd - fpsLimitBegin
-        val sleepTime = (1000000000f/30 - timeDiff).toInt()
-        while(fpsLimitEnd + sleepTime > System.nanoTime()){
-            Thread.yield()
-        }*/
-
         frameBuffer.end()
 
         drawFrame()
@@ -199,7 +187,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Spawn 4 kings
             val value = 11
 
-            val card = Card(suit, value, 5 + 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, bgGroup, debugFont)
+            val card = Card(suit, value, 5 + 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
             cards.add(card)
             fgGroup.addActor(card)
         }

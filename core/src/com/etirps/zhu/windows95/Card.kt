@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -21,7 +20,6 @@ class Card (var suit: Suit,         var value: Int,
             width: Float = 69f,     height: Float = 94f,
             var cardExtensions: CardExtensions,
             var shapeRenderer: ShapeRenderer,
-            var backgroundGroup: Group,
             var debugFont: BitmapFont? = null): Actor() {
 
     var touched: Boolean = false
@@ -35,8 +33,6 @@ class Card (var suit: Suit,         var value: Int,
     private var textureRegion: TextureRegion
 
     private var distanceTraveled: Float = 0f
-
-    private var trailList: MutableList<TrailCard>
 
     var bounds: Rectangle
     var polygon: Polygon
@@ -52,8 +48,6 @@ class Card (var suit: Suit,         var value: Int,
         setHeight(height)
 
         textureRegion = cardExtensions.getFront(suit, value)
-
-        trailList = mutableListOf()
 
         bounds = Rectangle(x, y, width, height)
         polygon = Polygon(floatArrayOf( 0f,             0f,
@@ -160,23 +154,6 @@ class Card (var suit: Suit,         var value: Int,
                 50f
             }
         }
-
-        // Drop a card for the trail
-        /*
-        //if(distanceTraveled > 5) {
-
-        val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
-        backgroundGroup.addActor(trail)
-        trailList.add(trail)
-
-        if(trailList.size > 140) {
-            trailList[0].remove()
-            trailList.removeAt(0)
-        }
-
-        //distanceTraveled = 0f
-        //}
-        */
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
