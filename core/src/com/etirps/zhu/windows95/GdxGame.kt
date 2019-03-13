@@ -9,10 +9,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.ScreenUtils
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 
 class GdxGame : ApplicationAdapter(), InputProcessor {
@@ -22,7 +25,9 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var camera: OrthographicCamera
     private lateinit var spriteBatch: SpriteBatch
     private lateinit var shapeRenderer: ShapeRenderer
+    private lateinit var fpsCounter: FPSCounter
     private lateinit var input: Input
+
     private var debugFont: BitmapFont? = null
 
     private var screenWidth: Float = 0f
@@ -33,6 +38,9 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private lateinit var cards: MutableList<Card>
     private var focusedCard: Card? = null
 
+    private var beginTime: Long = 0
+    private var endTime: Long = 0
+
     override fun create() {
         // Get screen size
         screenWidth = Gdx.graphics.width.toFloat()
@@ -41,12 +49,15 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         // Create engine objects
         spriteBatch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
-        //debugFont = BitmapFont()
+        debugFont = BitmapFont()
 
         // Create camera and set to size of screen
         // this allows play area to be a different "resolution" than the native screen
         camera = OrthographicCamera()
         camera.setToOrtho(false, screenWidth, screenHeight)
+
+        fpsCounter = FPSCounter(debugFont)
+        fpsCounter.resize(screenWidth, screenHeight)
 
         // Set viewport size, this is the size of the game area
         stage = Stage(FitViewport(screenWidth, screenHeight, camera), spriteBatch)
@@ -74,6 +85,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     override fun render() {
+        beginTime = TimeUtils.nanoTime()
+
         // Clear the screen
         Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -94,10 +107,21 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         drawHUD()
 
+        // Update FPS
+        fpsCounter.update()
+        fpsCounter.render()
+
         shapeRenderer.end()
 
         stage.act()
         stage.draw()
+
+        endTime = System.nanoTime()
+        val timeDiff = endTime - beginTime
+        val sleepTime = (1000000000f/30 - timeDiff).toInt()
+        while(endTime + sleepTime > System.nanoTime()){
+            Thread.yield()
+        }
     }
 
     override fun dispose() {
@@ -107,7 +131,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     /***** GAME LOGIC FUNCTIONS *****/
     private fun setupGame() {
-        for(s in 0..3) {
+        for(s in 0..0) {
             // Loop for every suit
             val suit = Suit.values()[s]
 
