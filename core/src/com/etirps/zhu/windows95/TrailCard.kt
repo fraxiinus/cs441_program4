@@ -14,7 +14,7 @@ class TrailCard(posX: Float,    posY: Float,
                 var shapeRenderer: ShapeRenderer,
                 var debugFont: BitmapFont?): Actor() {
 
-    private var life: Float = 3f
+    private var life: Float = 30f
     var timeRemaining: Float = life
     var lastTime: Long = TimeUtils.millis()
 
@@ -37,7 +37,7 @@ class TrailCard(posX: Float,    posY: Float,
     }
 
     override fun act(delta: Float) {
-        updateDuration()
+        //updateDuration()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

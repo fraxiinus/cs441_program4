@@ -35,6 +35,8 @@ class Card (var suit: Suit,         var value: Int,
 
     private var distanceTraveled: Float = 0f
 
+    private var trailList: MutableList<TrailCard>
+
     var bounds: Rectangle
     var polygon: Polygon
 
@@ -49,6 +51,8 @@ class Card (var suit: Suit,         var value: Int,
         setHeight(height)
 
         textureRegion = cardExtensions.getFront(suit, value)
+
+        trailList = mutableListOf()
 
         bounds = Rectangle(x, y, width, height)
         polygon = Polygon(floatArrayOf( 0f,             0f,
@@ -141,13 +145,19 @@ class Card (var suit: Suit,         var value: Int,
         }
 
         // Drop a card for the trail
-        //*
+        ///*
         //if(distanceTraveled > 5) {
 
-            val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
-            backgroundGroup.addActor(trail)
+        val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
+        backgroundGroup.addActor(trail)
+        trailList.add(trail)
 
-            distanceTraveled = 0f
+        if(trailList.size > 140) {
+            trailList[0].remove()
+            trailList.removeAt(0)
+        }
+
+        //distanceTraveled = 0f
         //}
         //*/
     }
