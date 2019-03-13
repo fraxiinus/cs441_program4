@@ -109,7 +109,6 @@ class Card (var suit: Suit,         var value: Int,
             y += speedY
 
             speedY -= (Gdx.input.accelerometerX * 0.5f)
-
             speedX += (Gdx.input.accelerometerY * 0.5f)
 
             bounds.x = x
@@ -135,6 +134,7 @@ class Card (var suit: Suit,         var value: Int,
         if(y + height > Gdx.graphics.height) {
             y = Gdx.graphics.height - height
             speedY = -(speedY / energyLoss)
+
 
             changeSuit()
         } else if (y < 0) {

@@ -3,18 +3,17 @@ package com.etirps.zhu.windows95
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 
@@ -34,12 +33,18 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private var screenHeight: Float = 0f
 
     private lateinit var cardTextures: CardExtensions
+    private lateinit var bootTexture: Texture
+    private lateinit var bootSound: Sound
 
     private lateinit var cards: MutableList<Card>
     private var focusedCard: Card? = null
 
-    private var beginTime: Long = 0
-    private var endTime: Long = 0
+    private var fpsLimitBegin: Long = 0
+    private var fpsLimitEnd: Long = 0
+
+    private var lastTime: Long = 0
+    private var soundPlayed: Boolean = false
+    private var postBoot: Boolean = false
 
     override fun create() {
         // Get screen size
@@ -59,6 +64,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         fpsCounter = FPSCounter(debugFont)
         fpsCounter.resize(screenWidth, screenHeight)
 
+        lastTime = TimeUtils.millis()
+
         // Set viewport size, this is the size of the game area
         stage = Stage(FitViewport(screenWidth, screenHeight, camera), spriteBatch)
         bgGroup = Group()
@@ -76,6 +83,8 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         // Load Textures
         cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
+        bootTexture = Texture("loading_win98.gif")
+        bootSound = Gdx.audio.newSound(Gdx.files.internal("win98.ogg"))
 
         // Load game objects
         cards = mutableListOf()
@@ -85,7 +94,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     override fun render() {
-        beginTime = TimeUtils.nanoTime()
+        fpsLimitBegin = TimeUtils.nanoTime()
 
         // Clear the screen
         Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
@@ -100,26 +109,45 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         actOnInput()
 
+        if((TimeUtils.millis() - lastTime) / 1000f < 1 && (TimeUtils.millis() - lastTime) / 1000f > 0.5 && !soundPlayed) {
+            bootSound.play(1f)
+            soundPlayed = true
+            return
+        }
+        else if((TimeUtils.millis() - lastTime) / 1000f < 8) {
+            Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+            spriteBatch.begin()
+            spriteBatch.draw(bootTexture, screenWidth / 2 - (1305 / 2), 0f, 1305f, 1080f)
+            spriteBatch.end()
+            return
+        } else if(!postBoot) {
+
+            bootTexture.dispose()
+            bootSound.dispose()
+
+            postBoot = true
+        }
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.color = Color.WHITE
-
         shapeRenderer.circle(input.destX, input.destY, 5f)
-
         drawHUD()
+
+        shapeRenderer.end()
 
         // Update FPS
         fpsCounter.update()
         fpsCounter.render()
 
-        shapeRenderer.end()
-
         stage.act()
         stage.draw()
 
-        endTime = System.nanoTime()
-        val timeDiff = endTime - beginTime
+        fpsLimitEnd = System.nanoTime()
+        val timeDiff = fpsLimitEnd - fpsLimitBegin
         val sleepTime = (1000000000f/30 - timeDiff).toInt()
-        while(endTime + sleepTime > System.nanoTime()){
+        while(fpsLimitEnd + sleepTime > System.nanoTime()){
             Thread.yield()
         }
     }
