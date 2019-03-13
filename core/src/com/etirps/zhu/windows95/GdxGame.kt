@@ -34,13 +34,14 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     private lateinit var cardTextures: CardExtensions
     private lateinit var bootTexture: Texture
+    private lateinit var lastTexture: TextureRegion
     private lateinit var bootSound: Sound
 
     private lateinit var cards: MutableList<Card>
     private var focusedCard: Card? = null
 
-    private var fpsLimitBegin: Long = 0
-    private var fpsLimitEnd: Long = 0
+    //private var fpsLimitBegin: Long = 0
+    //private var fpsLimitEnd: Long = 0
 
     private var lastTime: Long = 0
     private var soundPlayed: Boolean = false
@@ -93,11 +94,21 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         // Setup game and start
         setupGame()
+
+        frameBuffer.begin()
+
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        frameBuffer.end()
+        lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
+        lastTexture.flip(false, true)
     }
 
     override fun render() {
         frameBuffer.begin()
-        fpsLimitBegin = TimeUtils.nanoTime()
+
+        //fpsLimitBegin = TimeUtils.nanoTime()
 
         // Clear the screen
         Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
@@ -111,6 +122,11 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         shapeRenderer.projectionMatrix = camera.combined
 
         actOnInput()
+
+        // Draw the last frame as the background
+        spriteBatch.begin()
+        spriteBatch.draw(lastTexture, 0f, 0f)
+        spriteBatch.end()
 
         if((TimeUtils.millis() - lastTime) / 1000f < 1 && (TimeUtils.millis() - lastTime) / 1000f > 0.5 && !soundPlayed) {
             bootSound.play(1f)
@@ -134,6 +150,9 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             bootTexture.dispose()
             bootSound.dispose()
 
+            Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
             postBoot = true
         }
 
@@ -151,12 +170,12 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         stage.act()
         stage.draw()
 
-        fpsLimitEnd = System.nanoTime()
+        /*fpsLimitEnd = System.nanoTime()
         val timeDiff = fpsLimitEnd - fpsLimitBegin
         val sleepTime = (1000000000f/30 - timeDiff).toInt()
         while(fpsLimitEnd + sleepTime > System.nanoTime()){
             Thread.yield()
-        }
+        }*/
 
         frameBuffer.end()
 

@@ -162,7 +162,7 @@ class Card (var suit: Suit,         var value: Int,
         }
 
         // Drop a card for the trail
-        ///*
+        /*
         //if(distanceTraveled > 5) {
 
         val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
@@ -176,7 +176,7 @@ class Card (var suit: Suit,         var value: Int,
 
         //distanceTraveled = 0f
         //}
-        //*/
+        */
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
