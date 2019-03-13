@@ -112,6 +112,7 @@ class Card (var suit: Suit,         var value: Int,
             polygon.setPosition(x, y)
         }
 
+        // Bounce off the walls
         if(x + width > Gdx.graphics.width) {
             x = Gdx.graphics.width - width
 
@@ -139,6 +140,8 @@ class Card (var suit: Suit,         var value: Int,
             changeSuit()
         }
 
+        // Drop a card for the trail
+        //*
         if(distanceTraveled > 25) {
 
             val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
@@ -146,7 +149,7 @@ class Card (var suit: Suit,         var value: Int,
 
             distanceTraveled = 0f
         }
-
+        //*/
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
