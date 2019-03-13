@@ -142,13 +142,13 @@ class Card (var suit: Suit,         var value: Int,
 
         // Drop a card for the trail
         //*
-        if(distanceTraveled > 25) {
+        //if(distanceTraveled > 5) {
 
             val trail = TrailCard(x, y, width, height, textureRegion, shapeRenderer, debugFont)
             backgroundGroup.addActor(trail)
 
             distanceTraveled = 0f
-        }
+        //}
         //*/
     }
 

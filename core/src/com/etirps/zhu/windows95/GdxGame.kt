@@ -131,7 +131,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     /***** GAME LOGIC FUNCTIONS *****/
     private fun setupGame() {
-        for(s in 0..0) {
+        for(s in 0..3) {
             // Loop for every suit
             val suit = Suit.values()[s]
 
