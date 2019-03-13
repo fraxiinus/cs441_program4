@@ -11,6 +11,7 @@ import android.widget.VideoView;
 
 public class SplashScreen extends Activity implements MediaPlayer.OnCompletionListener, View.OnTouchListener {
 
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -24,7 +25,6 @@ public class SplashScreen extends Activity implements MediaPlayer.OnCompletionLi
         vv.setOnTouchListener(this);
         vv.setOnCompletionListener(this);
         vv.start();
-
     }
 
     @Override
@@ -41,4 +41,6 @@ public class SplashScreen extends Activity implements MediaPlayer.OnCompletionLi
         finish();
         return true;
     }
+
+
 }

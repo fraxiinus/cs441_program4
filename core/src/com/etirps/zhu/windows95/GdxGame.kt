@@ -80,6 +80,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         // Use this class as the input processor
         Gdx.input.inputProcessor = this
         input = Input()
+        Gdx.input.isCatchBackKey = true
 
         // Load Textures
         cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
@@ -116,6 +117,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         spriteBatch.projectionMatrix = camera.combined
         shapeRenderer.projectionMatrix = camera.combined
 
+        // Handle user Input
         actOnInput()
 
         // Draw the last frame as the background
@@ -153,12 +155,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             soundPlayed = false
         }
 
+        /*
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.color = Color.WHITE
-        shapeRenderer.circle(input.destX, input.destY, 5f)
+        shapeRenderer.circle(input.destX, input.destY, 5f)*/
         drawHUD()
 
-        shapeRenderer.end()
+        //shapeRenderer.end()
 
         // Update FPS
         fpsCounter.update()
@@ -290,6 +293,32 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     override fun keyDown(keycode: Int): Boolean {
+        if(keycode == com.badlogic.gdx.Input.Keys.BACK) {
+            Gdx.app.exit()
+            //System.exit(0)
+
+            /*
+            for (card in cards){
+                card.remove()
+            }
+
+            cards.clear()
+            focusedCard = null
+            lastTime = 0
+            soundPlayed = false
+
+            setupGame()
+
+            frameBuffer.begin()
+
+            Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+            frameBuffer.end()
+            lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
+            lastTexture.flip(false, true)
+            drawFrame()*/
+        }
         return true
     }
 
