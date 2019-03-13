@@ -15,7 +15,7 @@ public class SplashScreen extends Activity implements MediaPlayer.OnCompletionLi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.splash_screen);
-        String fileName = "android.resource://"+  getPackageName() +"/raw/video";
+        String fileName = "android.resource://"+  getPackageName() + "/" + R.raw.win98wide;
 
         VideoView vv = (VideoView) this.findViewById(R.id.surface);
         vv.setVideoURI(Uri.parse(fileName));
