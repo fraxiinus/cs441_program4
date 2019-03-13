@@ -11,8 +11,8 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		config.useGyroscope = false;  //default is false
 		config.useAccelerometer = true;
+		config.useGyroscope = false;  //default is false
 		config.useCompass = false;
 		initialize(new GdxGame(), config);
 	}
