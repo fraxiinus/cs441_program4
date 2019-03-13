@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.VideoView;
 
-public class SplashScreen extends Activity implements MediaPlayer.OnCompletionListener {
+public class SplashScreen extends Activity implements MediaPlayer.OnCompletionListener, View.OnTouchListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -19,6 +21,7 @@ public class SplashScreen extends Activity implements MediaPlayer.OnCompletionLi
 
         VideoView vv = (VideoView) this.findViewById(R.id.surface);
         vv.setVideoURI(Uri.parse(fileName));
+        vv.setOnTouchListener(this);
         vv.setOnCompletionListener(this);
         vv.start();
 
@@ -29,5 +32,13 @@ public class SplashScreen extends Activity implements MediaPlayer.OnCompletionLi
         Intent intent = new Intent(this, AndroidLauncher.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Intent intent = new Intent(this, AndroidLauncher.class);
+        startActivity(intent);
+        finish();
+        return true;
     }
 }
