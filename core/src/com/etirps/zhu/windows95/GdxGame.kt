@@ -211,7 +211,9 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         val suit = Suit.values()[(0..3).random()]
         val value = (0..11).random()
 
-        val newCard = Card(suit, value, x - (69f / 3) / 2, y - (94f / 3) / 2, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
+        val cardWidth = 69f * 2
+        val cardHeight = 94f * 2
+        val newCard = Card(suit, value, x - cardWidth / 2, y - cardHeight / 2, cardWidth, cardHeight, cardTextures, shapeRenderer, debugFont)
         newCard.speedX = 5f + (5f * (0..3).random())
         //newCard.speedY = 5f * (1..2).random()
         cards.add(newCard)
