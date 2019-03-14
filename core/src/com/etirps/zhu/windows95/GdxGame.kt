@@ -42,6 +42,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     private var lastTime: Long = 0
     private var soundPlayed: Boolean = false
+    private var bsodShown: Boolean = false
 
     override fun create() {
         // Get screen size
@@ -156,13 +157,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             soundPlayed = false
         }
 
-        /*
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.color = Color.WHITE
-        shapeRenderer.circle(input.destX, input.destY, 5f)*/
         drawHUD()
-
-        //shapeRenderer.end()
 
         // Update FPS
         fpsCounter.update()
@@ -181,6 +176,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         cardTextures.dispose()
         frameBuffer.dispose()
         bootSound.dispose()
+        bsodTexture.dispose()
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
@@ -247,16 +243,40 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     private fun resetGame() {
-        for (card in cards){
-            card.remove()
+        // If BSOD is shown
+        if(bsodShown) {
+
+            // If there are no cards, setup cards
+            if(cards.count() < 1) {
+                setupGame()
+            }
+
+            // start drawing frame
+            frameBuffer.begin()
+            // Draw blue background
+            Gdx.gl.glClearColor(0f, 0f, 170f / 255f, 1f)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+            // Draw bsod texture
+            spriteBatch.begin()
+            val bsodWidth = 1280f
+            val bsodHeight = 800f
+            spriteBatch.draw(bsodTexture, screenWidth / 2 - bsodWidth / 2, screenHeight / 2 - bsodHeight / 2, bsodWidth, bsodHeight)
+            spriteBatch.end()
+
+            frameBuffer.end()
+
+            // Save texture and draw
+            lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
+            lastTexture.flip(false, true)
+            drawFrame()
+
+            return
         }
 
-        cards.clear()
         focusedCard = null
         lastTime = 0
         soundPlayed = false
-
-        setupGame()
 
         frameBuffer.begin()
 
@@ -270,17 +290,21 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     }
 
     private fun showBSOD() {
+        // If bsod is already shown, skip
+        if(bsodShown) { return }
+
+        // Remove all cards
         for (card in cards){
             card.remove()
         }
-
         cards.clear()
 
+        // Start drawing new frame
         frameBuffer.begin()
-
+        // Draw blue background
         Gdx.gl.glClearColor(0f, 0f, 170f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-
+        // Draw BSOD texture
         spriteBatch.begin()
         val bsodWidth = 1280f
         val bsodHeight = 800f
@@ -289,9 +313,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         frameBuffer.end()
 
+        // Save frame and draw on screen
         lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
         lastTexture.flip(false, true)
         drawFrame()
+
+        // Flip bsod flag
+        bsodShown = true
     }
 
     /***** INPUT PROCESSOR FUNCTIONS *****/
@@ -300,9 +328,23 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         input.tappedDown(actualxy.x, actualxy.y)
 
+        // 3 fingers
         if(pointer > 1) {
+            // If bsod is already up
+            if(bsodShown) {
+                // flip the flag
+                bsodShown = false
+                // reset game to regular green
+                resetGame()
+
+                return true
+            }
+
+            // Show BSOD
             showBSOD()
+
             return true
+        // two fingers
         } else if (pointer > 0) {
             resetGame()
             return true
