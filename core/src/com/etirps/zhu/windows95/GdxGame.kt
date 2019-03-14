@@ -188,10 +188,23 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             // Spawn 4 kings
             val value = 11
 
-            val card = Card(suit, value, 5 + 250f * s, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
+            val card = Card(suit, value, 5 + 250f * s, screenHeight - 400f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
+            card.speedX = (0..3).random() * 15f
+            card.speedY = (0..3).random() * 15f
             cards.add(card)
             fgGroup.addActor(card)
         }
+    }
+
+    private fun addCard() {
+        val suit = Suit.values()[(0..3).random()]
+        val value = (0..11).random()
+
+        val newCard = Card(suit, value, 5 + 100f * value, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
+        newCard.speedX = 5f * value
+        newCard.speedY = 5f * (0..11).random()
+        cards.add(newCard)
+        fgGroup.addActor(newCard)
     }
 
     private fun drawFrame() {
@@ -328,29 +341,40 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         input.tappedDown(actualxy.x, actualxy.y)
 
-        // 3 fingers
-        if(pointer > 1) {
-            // If bsod is already up
-            if(bsodShown) {
-                // flip the flag
-                bsodShown = false
-                // reset game to regular green
-                resetGame()
+        when {
+            // 4 fingers
+            pointer > 2 -> {
+                // If bsod is already up
+                if(bsodShown) {
+                    // flip the flag
+                    bsodShown = false
+                    // reset game to regular green
+                    resetGame()
 
+                    return true
+                }
+
+                // Show BSOD
+                showBSOD()
                 return true
             }
 
-            // Show BSOD
-            showBSOD()
+            // three fingers
+            pointer > 1 -> {
+                resetGame()
+                return true
+            }
 
-            return true
-        // two fingers
-        } else if (pointer > 0) {
-            resetGame()
-            return true
+            // two fingers
+            pointer > 0 -> {
+                //addCard()
+                return true
+            }
+
+            // Other?????
+            else -> return true
         }
 
-        return true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
