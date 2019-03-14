@@ -26,8 +26,8 @@ class Card (var suit: Suit,         var value: Int,
     private var lastX: Float
     private var lastY: Float
 
-    private var speedX: Float = 0f
-    private var speedY: Float = 0f
+    var speedX: Float = 0f
+    var speedY: Float = 0f
 
     private var energyLoss: Float = 1.25f
     private var textureRegion: TextureRegion
