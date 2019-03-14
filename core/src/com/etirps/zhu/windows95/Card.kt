@@ -140,18 +140,18 @@ class Card (var suit: Suit,         var value: Int,
         }
 
         // Limit the speed of a card
-        if(abs(speedX) > 50) {
+        if(abs(speedX) > 70) {
             speedX = if(speedX < 0) {
-                -50f
+                -70f
             } else {
-                50f
+                70f
             }
         }
-        if(abs(speedY) > 50) {
+        if(abs(speedY) > 70) {
             speedY = if(speedY < 0) {
-                -50f
+                -70f
             } else {
-                50f
+                70f
             }
         }
     }
