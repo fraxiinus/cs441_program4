@@ -34,6 +34,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     private lateinit var cardTextures: CardExtensions
     private lateinit var bsodTexture: Texture
+    private lateinit var windowTexture: Texture
     private lateinit var lastTexture: TextureRegion
     private lateinit var bootSound: Sound
 
@@ -86,6 +87,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         // Load Textures
         cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
         bsodTexture = Texture("WindowsBSOD.png")
+        windowTexture = Texture("solitaire.png")
         bootSound = Gdx.audio.newSound(Gdx.files.internal("win98.ogg"))
 
         // Load game objects
@@ -96,7 +98,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         frameBuffer.begin()
 
-        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+        Gdx.gl.glClearColor(85f / 255f, 170f / 255f, 170f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         frameBuffer.end()
@@ -109,7 +111,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         frameBuffer.begin()
 
         // Clear the screen
-        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+        Gdx.gl.glClearColor(85f / 255f, 170f / 255f, 170f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // Update camera matrices
@@ -137,12 +139,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             return
         }
         else if((TimeUtils.millis() - lastTime) / 1000f < 2) {
-            Gdx.gl.glClearColor(9f / 255f, 141 / 255f, 126 / 255f, 1f)
+            Gdx.gl.glClearColor(85f / 255f, 170f / 255f, 170f / 255f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
             //spriteBatch.begin()
             //spriteBatch.draw(bootTexture, screenWidth / 2 - (1305 / 2), 0f, 1305f, 1080f)
             //spriteBatch.end()
+            // Draw solitaire texture
 
             frameBuffer.end()
 
@@ -151,8 +154,15 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         } else if(soundPlayed) {
             bootSound.dispose()
 
-            Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+            Gdx.gl.glClearColor(85f / 255f, 170f / 255f, 170f / 255f, 1f)
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+
+            spriteBatch.begin()
+            val bsodWidth = 628f * 2
+            val bsodHeight = 442f * 2
+            spriteBatch.draw(windowTexture, screenWidth / 2 - bsodWidth / 2, screenHeight / 2 - bsodHeight / 2, bsodWidth, bsodHeight)
+            spriteBatch.end()
 
             soundPlayed = false
         }
@@ -177,6 +187,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         frameBuffer.dispose()
         bootSound.dispose()
         bsodTexture.dispose()
+        windowTexture.dispose()
     }
 
     /***** GAME LOGIC FUNCTIONS *****/
@@ -307,8 +318,15 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         frameBuffer.begin()
 
-        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+        Gdx.gl.glClearColor(85f / 255f, 170f / 255f, 170f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        // Draw solitaire texture
+        spriteBatch.begin()
+        val bsodWidth = 628f * 2
+        val bsodHeight = 442f * 2
+        spriteBatch.draw(windowTexture, screenWidth / 2 - bsodWidth / 2, screenHeight / 2 - bsodHeight / 2, bsodWidth, bsodHeight)
+        spriteBatch.end()
 
         frameBuffer.end()
         lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
