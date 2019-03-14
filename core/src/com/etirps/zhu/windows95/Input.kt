@@ -8,7 +8,7 @@ class Input {
     var fingerUp: Boolean = false
     var doubleTap: Boolean = false
     var draggingCard: Boolean = false
-    var doubleTapSpeed: Float = 2f
+    var doubleTapSpeed: Float = 0.3f
 
     var origX: Float = 0f
     var origY: Float = 0f
@@ -38,7 +38,7 @@ class Input {
     fun tappedUp(x: Float, y: Float) {
         if(!fingerUp) {
             val currTime = TimeUtils.millis()
-            doubleTap = currTime - lastTapTime < doubleTapSpeed
+            doubleTap = (currTime - lastTapTime) / 1000f < doubleTapSpeed
 
             lastTapTime = TimeUtils.millis()
 

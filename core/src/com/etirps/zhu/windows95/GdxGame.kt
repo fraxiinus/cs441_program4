@@ -92,7 +92,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         cards = mutableListOf()
 
         // Setup game and start
-        setupGame()
+        //setupGame()
 
         frameBuffer.begin()
 
@@ -196,13 +196,13 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         }
     }
 
-    private fun addCard() {
+    private fun addCard(x: Float, y: Float) {
         val suit = Suit.values()[(0..3).random()]
         val value = (0..11).random()
 
-        val newCard = Card(suit, value, 5 + 100f * value, screenHeight - 300f, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
-        newCard.speedX = 5f * value
-        newCard.speedY = 5f * (0..11).random()
+        val newCard = Card(suit, value, x - (69f / 3) / 2, y - (94f / 3) / 2, 69f * 3, 94f * 3, cardTextures, shapeRenderer, debugFont)
+        newCard.speedX = 5f + (5f * (0..3).random())
+        //newCard.speedY = 5f * (1..2).random()
         cards.add(newCard)
         fgGroup.addActor(newCard)
     }
@@ -242,6 +242,11 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
             focusedCard?.move(input.destX, input.destY)
         }
 
+        if(input.doubleTap) {
+            addCard(input.origX, input.origY)
+            input.doubleTap = false
+        }
+
     }
 
     private fun drawHUD() {
@@ -255,13 +260,22 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     }
 
-    private fun resetGame() {
+    private fun resetGame(clearCards: Boolean) {
+
+        if(clearCards) {
+            // Remove all cards
+            for (card in cards){
+                card.remove()
+            }
+            cards.clear()
+        }
+
         // If BSOD is shown
         if(bsodShown) {
 
             // If there are no cards, setup cards
             if(cards.count() < 1) {
-                setupGame()
+                //setupGame()
             }
 
             // start drawing frame
@@ -349,7 +363,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
                     // flip the flag
                     bsodShown = false
                     // reset game to regular green
-                    resetGame()
+                    resetGame(true)
 
                     return true
                 }
@@ -361,7 +375,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
             // three fingers
             pointer > 1 -> {
-                resetGame()
+                resetGame(false)
                 return true
             }
 
