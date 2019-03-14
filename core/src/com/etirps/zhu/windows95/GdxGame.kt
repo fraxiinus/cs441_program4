@@ -33,6 +33,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     private var screenHeight: Float = 0f
 
     private lateinit var cardTextures: CardExtensions
+    private lateinit var bsodTexture: Texture
     private lateinit var lastTexture: TextureRegion
     private lateinit var bootSound: Sound
 
@@ -41,7 +42,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     private var lastTime: Long = 0
     private var soundPlayed: Boolean = false
-    //private var postBoot: Boolean = false
 
     override fun create() {
         // Get screen size
@@ -84,6 +84,7 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
         // Load Textures
         cardTextures = CardExtensions(Texture("cardFaces.png"), Texture("cardBack.png"))
+        bsodTexture = Texture("WindowsBSOD.png")
         bootSound = Gdx.audio.newSound(Gdx.files.internal("win98.ogg"))
 
         // Load game objects
@@ -245,11 +246,67 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
 
     }
 
+    private fun resetGame() {
+        for (card in cards){
+            card.remove()
+        }
+
+        cards.clear()
+        focusedCard = null
+        lastTime = 0
+        soundPlayed = false
+
+        setupGame()
+
+        frameBuffer.begin()
+
+        Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        frameBuffer.end()
+        lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
+        lastTexture.flip(false, true)
+        drawFrame()
+    }
+
+    private fun showBSOD() {
+        for (card in cards){
+            card.remove()
+        }
+
+        cards.clear()
+
+        frameBuffer.begin()
+
+        Gdx.gl.glClearColor(0f, 0f, 170f / 255f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        spriteBatch.begin()
+        val bsodWidth = 1280f
+        val bsodHeight = 800f
+        spriteBatch.draw(bsodTexture, screenWidth / 2 - bsodWidth / 2, screenHeight / 2 - bsodHeight / 2, bsodWidth, bsodHeight)
+        spriteBatch.end()
+
+        frameBuffer.end()
+
+        lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
+        lastTexture.flip(false, true)
+        drawFrame()
+    }
+
     /***** INPUT PROCESSOR FUNCTIONS *****/
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val actualxy = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
 
         input.tappedDown(actualxy.x, actualxy.y)
+
+        if(pointer > 1) {
+            showBSOD()
+            return true
+        } else if (pointer > 0) {
+            resetGame()
+            return true
+        }
 
         return true
     }
@@ -295,29 +352,6 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
     override fun keyDown(keycode: Int): Boolean {
         if(keycode == com.badlogic.gdx.Input.Keys.BACK) {
             Gdx.app.exit()
-            //System.exit(0)
-
-            /*
-            for (card in cards){
-                card.remove()
-            }
-
-            cards.clear()
-            focusedCard = null
-            lastTime = 0
-            soundPlayed = false
-
-            setupGame()
-
-            frameBuffer.begin()
-
-            Gdx.gl.glClearColor(0f, 128f / 255f, 0f, 1f)
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-
-            frameBuffer.end()
-            lastTexture = TextureRegion(frameBuffer.colorBufferTexture)
-            lastTexture.flip(false, true)
-            drawFrame()*/
         }
         return true
     }
