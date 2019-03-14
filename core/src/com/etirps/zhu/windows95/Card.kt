@@ -29,7 +29,7 @@ class Card (var suit: Suit,         var value: Int,
     var speedX: Float = 0f
     var speedY: Float = 0f
 
-    private var energyLoss: Float = 1.25f
+    private var energyLoss: Float = 10f
     private var textureRegion: TextureRegion
 
     private var distanceTraveled: Float = 0f
@@ -102,8 +102,9 @@ class Card (var suit: Suit,         var value: Int,
             x += speedX
             y += speedY
 
-            speedY -= (Gdx.input.accelerometerX * 0.5f)
-            speedX += (Gdx.input.accelerometerY * 0.5f)
+            // Update the speed using the accelerometer
+            speedY -= (Gdx.input.accelerometerX * 0.3f)
+            speedX += (Gdx.input.accelerometerY * 0.3f)
 
             bounds.x = x
             bounds.y = y
@@ -114,27 +115,51 @@ class Card (var suit: Suit,         var value: Int,
         if(x + width > Gdx.graphics.width) {
             x = Gdx.graphics.width - width
 
-            speedX = -(speedX / energyLoss)
+            // Reduce speed
+            if(speedX - energyLoss < 0) {
+                speedX = 0f
+            } else {
+                speedX -= energyLoss
+                speedX *= -1
+            }
 
             changeSuit()
         } else if(x < 0) {
             x = 0f
 
-            speedX = -(speedX / energyLoss)
+            // Reduce speed
+            if(abs(speedX) - energyLoss < 0) {
+                speedX = 0f
+            } else {
+                speedX += energyLoss
+                speedX *= -1
+            }
 
             changeSuit()
         }
 
         if(y + height > Gdx.graphics.height) {
             y = Gdx.graphics.height - height
-            speedY = -(speedY / energyLoss)
 
+            // Reduce speed
+            if(speedY - energyLoss < 0) {
+                speedY = 0f
+            } else {
+                speedY -= energyLoss
+                speedY *= -1
+            }
 
             changeSuit()
         } else if (y < 0) {
             y = 0f
 
-            speedY = -(speedY / energyLoss)
+            // Reduce speed
+            if(abs(speedY) - energyLoss < 0) {
+                speedY = 0f
+            } else {
+                speedY += energyLoss
+                speedY *= -1
+            }
 
             changeSuit()
         }
