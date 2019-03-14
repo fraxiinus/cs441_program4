@@ -4,12 +4,13 @@ It's 8:24 PM. You're sitting at the living room computer, an old Compaq running 
 
 ## Features
 * Boot screen and sound!
-* Runs at a **realistic** and *lifelike* 30 fps!
+* Runs at a **realistic** and *lifelike* 60 fps!
 * Imitates the classic cascading effect from Microsoft Solitaire!
 * Cards change their value when hitting the walls!
+* Double tap to spawn another card!
 * Touch and drag the cards! Throw them around!
+* Triple tap to change the background!
 * Motion controls! Alter the direction of the cards by rotating your phone!
-* Heats up your phone! Use it as a hand warmer!
 
 ## Stuff I'm Proud Of
 * Card textures come from a single image! I do some super cool texture region work to split the image into textures!
