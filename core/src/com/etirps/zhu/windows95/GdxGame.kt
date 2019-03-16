@@ -214,7 +214,12 @@ class GdxGame : ApplicationAdapter(), InputProcessor {
         val cardWidth = 69f * 2
         val cardHeight = 94f * 2
         val newCard = Card(suit, value, x - cardWidth / 2, y - cardHeight / 2, cardWidth, cardHeight, cardTextures, shapeRenderer, debugFont)
-        newCard.speedX = 5f + (5f * (0..3).random())
+        newCard.speedX = 5f + (2f * (0..3).random())
+
+        if((0..1).random() == 0) {
+            newCard.speedX *= -1
+        }
+
         //newCard.speedY = 5f * (1..2).random()
         cards.add(newCard)
         fgGroup.addActor(newCard)
