@@ -29,7 +29,7 @@ class Card (var suit: Suit,         var value: Int,
     var speedX: Float = 0f
     var speedY: Float = 0f
 
-    private var energyLoss: Float = 10f
+    private var energyLoss: Float = 8f
     private var textureRegion: TextureRegion
 
     private var distanceTraveled: Float = 0f
@@ -67,7 +67,12 @@ class Card (var suit: Suit,         var value: Int,
         polygon.setPosition(x, y)
     }
 
-    private fun changeSuit() {
+    private fun changeValue() {
+        when {
+            speedX < 0.5f && speedX > -0.5f -> return
+            speedY < 0.5f && speedY > -0.5f -> return
+        }
+
         when {
             value == 0 -> value = 12
             value > 0 -> value -= 1
@@ -123,7 +128,7 @@ class Card (var suit: Suit,         var value: Int,
                 speedX *= -1
             }
 
-            changeSuit()
+            changeValue()
         } else if(x < 0) {
             x = 0f
 
@@ -135,7 +140,7 @@ class Card (var suit: Suit,         var value: Int,
                 speedX *= -1
             }
 
-            changeSuit()
+            changeValue()
         }
 
         if(y + height > Gdx.graphics.height) {
@@ -149,7 +154,7 @@ class Card (var suit: Suit,         var value: Int,
                 speedY *= -1
             }
 
-            changeSuit()
+            changeValue()
         } else if (y < 0) {
             y = 0f
 
@@ -161,7 +166,7 @@ class Card (var suit: Suit,         var value: Int,
                 speedY *= -1
             }
 
-            changeSuit()
+            changeValue()
         }
 
         // Limit the speed of a card
